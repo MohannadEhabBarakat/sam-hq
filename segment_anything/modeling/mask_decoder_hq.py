@@ -169,10 +169,25 @@ class MaskDecoderHQ(nn.Module):
         output_tokens = output_tokens.unsqueeze(0).expand(sparse_prompt_embeddings.size(0), -1, -1)
         tokens = torch.cat((output_tokens, sparse_prompt_embeddings), dim=1)
 
+        # # Expand per-image data in batch direction to be per-mask
+        # src = torch.repeat_interleave(image_embeddings, tokens.shape[0], dim=0)
+        # src = src + dense_prompt_embeddings
+        # pos_src = torch.repeat_interleave(image_pe, tokens.shape[0], dim=0)
         # Expand per-image data in batch direction to be per-mask
-        src = torch.repeat_interleave(image_embeddings, tokens.shape[0], dim=0)
+        
+        # First line is the old code. This repeat_interleave works if batch = 1 or more with one 
+        # prompt. But in our case we pass multiple prompt and multiple images.
+        # src = torch.repeat_interleave(image_embeddings, tokens.shape[0], dim=0)
+        if image_embeddings.shape[0] != tokens.shape[0]:
+            src = torch.repeat_interleave(image_embeddings, tokens.shape[0], dim=0)
+        else:
+            src = image_embeddings
         src = src + dense_prompt_embeddings
-        pos_src = torch.repeat_interleave(image_pe, tokens.shape[0], dim=0)
+        # pos_src = torch.repeat_interleave(image_pe, tokens.shape[0], dim=0)
+        if image_pe.shape[0] != tokens.shape[0]:
+            pos_src = torch.repeat_interleave(image_pe, tokens.shape[0], dim=0)
+        else:
+            pos_src = image_embeddings
         b, c, h, w = src.shape
 
         # Run the transformer
@@ -183,8 +198,8 @@ class MaskDecoderHQ(nn.Module):
         # Upscale mask embeddings and predict masks using the mask tokens
         src = src.transpose(1, 2).view(b, c, h, w)
 
-        upscaled_embedding_sam = self.output_upscaling(src)
-        upscaled_embedding_hq = self.embedding_maskfeature(upscaled_embedding_sam) + hq_features.repeat(b,1,1,1)
+        upscaled_embedding_sam = self.output_upscaling(src) 
+        upscaled_embedding_hq = self.embedding_maskfeature(upscaled_embedding_sam) + hq_features # .repeat(b,1,1,1) No need to repeat as we provide hq_features batched
 
         hyper_in_list: List[torch.Tensor] = []
         for i in range(self.num_mask_tokens):
