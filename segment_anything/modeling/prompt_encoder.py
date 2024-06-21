@@ -59,6 +59,9 @@ class PromptEncoder(nn.Module):
         )
         self.no_mask_embed = nn.Embedding(1, embed_dim)
 
+    def reload_pe_layer(self):
+        self.pe_layer = PositionEmbeddingRandom(self.embed_dim // 2)
+
     def get_dense_pe(self) -> torch.Tensor:
         """
         Returns the positional encoding used to encode point prompts,
