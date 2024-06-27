@@ -56,7 +56,7 @@ class MaskDecoderHQ(MaskDecoder):
     def __init__(self, *,
                         transformer_dim=256,
                         transformer=None,
-                        num_multimask_outputs=num_multimask_outputs,
+                        num_multimask_outputs=3,
                         activation=nn.GELU,
                         iou_head_depth= 3,
                         iou_head_hidden_dim= 256,):
