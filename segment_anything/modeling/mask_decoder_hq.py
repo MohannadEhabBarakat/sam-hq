@@ -11,6 +11,7 @@ import cv2
 import random
 from typing import Dict, List, Tuple
 from .mask_decoder import MaskDecoder
+from .transformer import TwoWayTransformer
 
 
 class LayerNorm2d(nn.Module):
