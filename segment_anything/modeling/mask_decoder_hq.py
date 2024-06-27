@@ -53,28 +53,32 @@ class MLP(nn.Module):
         return x
 
 class MaskDecoderHQ(MaskDecoder):
-    def __init__(self, model_type):
-        super().__init__(transformer_dim=256,
-                        transformer=TwoWayTransformer(
-                                depth=2,
-                                embedding_dim=256,
-                                mlp_dim=2048,
-                                num_heads=8,
-                            ),
-                        num_multimask_outputs=3,
+    def __init__(self, *,
+                        transformer_dim=256,
+                        transformer=None,
+                        num_multimask_outputs=num_multimask_outputs,
                         activation=nn.GELU,
                         iou_head_depth= 3,
-                        iou_head_hidden_dim= 256,)
-        assert model_type in ["vit_b","vit_l","vit_h"]
+                        iou_head_hidden_dim= 256,):
         
-        checkpoint_dict = {"vit_b":"pretrained_checkpoint/sam_vit_b_maskdecoder.pth",
-                           "vit_l":"pretrained_checkpoint/sam_vit_l_maskdecoder.pth",
-                           'vit_h':"pretrained_checkpoint/sam_vit_h_maskdecoder.pth"}
-        checkpoint_path = checkpoint_dict[model_type]
-        self.load_state_dict(torch.load(checkpoint_path))
-        print("HQ Decoder init from SAM MaskDecoder")
-        for n,p in self.named_parameters():
-            p.requires_grad = False
+        super().__init__(transformer_dim=transformer_dim,
+                        transformer=transformer,
+                        num_multimask_outputs=num_multimask_outputs,
+                        activation=activation,
+                        iou_head_depth=iou_head_depth,
+                        iou_head_hidden_dim=iou_head_hidden_dim)
+        
+        # model_type, 
+        # assert model_type in ["vit_b","vit_l","vit_h"]
+        
+        # checkpoint_dict = {"vit_b":"pretrained_checkpoint/sam_vit_b_maskdecoder.pth",
+        #                    "vit_l":"pretrained_checkpoint/sam_vit_l_maskdecoder.pth",
+        #                    'vit_h':"pretrained_checkpoint/sam_vit_h_maskdecoder.pth"}
+        # checkpoint_path = checkpoint_dict[model_type]
+        # self.load_state_dict(torch.load(checkpoint_path))
+        # print("HQ Decoder init from SAM MaskDecoder")
+        # for n,p in self.named_parameters():
+        #     p.requires_grad = False
 
         transformer_dim=256
         vit_dim_dict = {"vit_b":768,"vit_l":1024,"vit_h":1280}
