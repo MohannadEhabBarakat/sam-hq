@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import cv2
 import random
 from typing import Dict, List, Tuple
+from .mask_decoder import MaskDecoder
 
 
 class LayerNorm2d(nn.Module):
