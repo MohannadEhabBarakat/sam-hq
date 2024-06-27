@@ -59,7 +59,8 @@ class MaskDecoderHQ(MaskDecoder):
                         num_multimask_outputs=3,
                         activation=nn.GELU,
                         iou_head_depth= 3,
-                        iou_head_hidden_dim= 256,):
+                        iou_head_hidden_dim= 256,
+                        vit_dim=1024):
         
         super().__init__(transformer_dim=transformer_dim,
                         transformer=transformer,
@@ -80,9 +81,9 @@ class MaskDecoderHQ(MaskDecoder):
         # for n,p in self.named_parameters():
         #     p.requires_grad = False
 
-        transformer_dim=256
-        vit_dim_dict = {"vit_b":768,"vit_l":1024,"vit_h":1280}
-        vit_dim = vit_dim_dict[model_type]
+        # transformer_dim=256
+        # vit_dim_dict = {"vit_b":768,"vit_l":1024,"vit_h":1280}
+        # vit_dim = vit_dim_dict[model_type]
 
         self.hf_token = nn.Embedding(1, transformer_dim)
         self.hf_mlp = MLP(transformer_dim, transformer_dim, transformer_dim // 8, 3)
