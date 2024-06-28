@@ -133,7 +133,7 @@ class MaskDecoderHQ(nn.Module):
                 image_pe=image_pe[i_batch],
                 sparse_prompt_embeddings=sparse_prompt_embeddings[i_batch],
                 dense_prompt_embeddings=dense_prompt_embeddings[i_batch],
-                hq_feature = hq_features[i_batch].unsqueeze(0)
+                hq_features = hq_features[i_batch].unsqueeze(0)
             )
             masks.append(mask)
             iou_preds.append(iou_pred)
